@@ -1,0 +1,15 @@
+#! /bin/bash
+
+if [ -f "../parse-args.sh" ] ; then
+    source "../parse-args.sh"
+fi
+
+if [[ "${OFFLINE_ONLINE_MONKEY_COUNT}" == "0" ]] ; then
+    echo skipping
+    exit 0
+fi
+
+for i in $(eval echo "{1..${OFFLINE_ONLINE_MONKEY_COUNT}}") ; do
+    echo stopping
+    docker rm -f lww-set-offline-online-monkey-${i}
+done

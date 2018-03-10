@@ -1,0 +1,36 @@
+#! /bin/bash
+
+set -e
+
+if [ -f "../parse-args.sh" ] ; then
+    source "../parse-args.sh"
+fi
+
+if [[ "${START_NODES}" != "yes" ]] ; then
+    echo skipping
+    exit 0
+fi
+
+echo building lww-set-node
+
+echo compiling
+
+LWW_SET_PATH=./../..
+
+if [[ "${USE_BUILDER}" == "yes" ]] ; then
+    pushd ../00-builder/
+    ./exec --rm lww-set-node-builder `realpath ${LWW_SET_PATH}` "/in" "lein do clean, uberjar"
+    popd
+else
+    pushd ${LWW_SET_PATH}
+    lein do clean, uberjar
+    popd
+fi
+
+rm -rf .release
+cp -rf ${LWW_SET_PATH}/target ./.release
+cp -f ${LWW_SET_PATH}/.docker-lein-env .lein-env
+
+echo building
+
+docker build $NOCACHE -t lww-set-node .

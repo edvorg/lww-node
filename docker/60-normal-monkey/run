@@ -1,0 +1,30 @@
+#! /bin/bash
+
+set -e
+
+if [ -f "../parse-args.sh" ] ; then
+    source "../parse-args.sh"
+fi
+
+if [[ "${START_NORMAL_MONKEY}" != "yes" ]] ; then
+    echo skipping
+    exit 0
+fi
+
+if [[ "${NORMAL_MONKEY_COUNT}" == "0" ]] ; then
+    echo skipping
+    exit 0
+fi
+
+echo starting normal monkeys
+
+DIR=`dirname ${0}`
+DIR=`realpath ${DIR}`
+
+for i in $(eval echo "{1..${NORMAL_MONKEY_COUNT}}") ; do
+    pushd ../00-builder/
+    ./exec -d lww-set-normal-monkey-${i} "${DIR}" "/in" "/in/normal_monkey.clj ${NODES_COUNT} ${NORMAL_MONKEY_IN_PROCESS_COUNT}"
+    popd
+done
+
+echo all monkeys are up

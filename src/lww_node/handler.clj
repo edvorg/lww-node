@@ -18,6 +18,10 @@
              lww-element-set/get-last-update
              atom))
 
+(defn get-replication-nodes []
+  (let [[this-node & other-nodes] (:nodes (mount/args))]
+    (disj (set other-nodes) this-node)))
+
 (defn- replicate-diff
   "Upload replica diff to other instances."
   [replica-diff]
@@ -29,8 +33,9 @@
         (let [replica-diff (->> replica-diff
                                 (lww-element-set/filter-replica (fn [[_ timestamp]]
                                                                   (< old-val timestamp))))
-              nodes        (set (rest (:nodes (mount/args))))]
-          (timbre/info "replicated diff to nodes" nodes)
+
+              nodes        (get-replication-nodes)]
+          (timbre/info "replicating diff to nodes" nodes)
           (doseq [node nodes]
             (try
               (http/post (str "http://" node "/update")
@@ -50,7 +55,7 @@
   (response/response "ok"))
 
 (defn delete-handler
-  "Remove elements from current replica. "
+  "Remove elements from current replica."
   [{elements :body}]
   (timbre/debug "deleting" (vec elements))
   (let [{:keys [replica]} (swap! (:data @redis/offloader)
@@ -70,19 +75,37 @@
 (defn members-handler
   "Return all members in current replica."
   [_]
-  (let [members (lww-element-set/members (:replica (deref (:data @redis/offloader))))]
+  (let [members (-> @redis/offloader
+                    :data
+                    deref
+                    :replica
+                    lww-element-set/members)]
     (timbre/debug "getting members" (vec members))
     (response/response members)))
+
+(defn updates-handler
+  "Return replica diff since provided timestamp."
+  [{{:keys [since]} :params}]
+  (let [since        (Long/parseLong since)
+        replica-diff (->> @redis/offloader
+                          :data
+                          deref
+                          :replica
+                          (lww-element-set/filter-replica (fn [[_ timestamp]]
+                                                            (< since timestamp))))]
+    (timbre/debug "getting replica diff since" since "returning" replica-diff)
+    (response/response replica-diff)))
 
 (defroutes app-routes
   (POST "/insert" [] insert-handler)
   (POST "/delete" [] delete-handler)
   (POST "/update" [] update-handler)
+  (GET "/updates" [] updates-handler)
   (GET "/" [] members-handler)
   (route/not-found "Not Found"))
 
 (def app
   (-> app-routes
       (wrap-transit-response {:encoding :json :opts {}})
-      (wrap-transit-body {:keywords? true :opts {}})
+      (wrap-transit-body {:keywords? false :opts {}})
       (wrap-defaults (assoc-in site-defaults [:security :anti-forgery] false))))

@@ -1,0 +1,8 @@
+#! /bin/bash
+
+if [ -f "../parse-args.sh" ] ; then
+    source "../parse-args.sh"
+fi
+
+docker stop lww-set-redis
+docker rm lww-set-redis

@@ -1,0 +1,12 @@
+#! /bin/bash
+
+if [ -f "../parse-args.sh" ] ; then
+    source "../parse-args.sh"
+fi
+
+for i in $(eval echo "{1..${NODES_COUNT}}") ; do
+    echo stopping
+    docker stop lww-set-node-${i}
+    echo removing
+    docker rm lww-set-node-${i}
+done

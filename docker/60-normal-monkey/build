@@ -1,0 +1,7 @@
+#! /bin/bash
+
+set -e
+
+if [ -f "../parse-args.sh" ] ; then
+    source "../parse-args.sh"
+fi

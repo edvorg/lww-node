@@ -1,0 +1,30 @@
+#! /bin/bash
+
+set -e
+
+if [ -f "../parse-args.sh" ] ; then
+    source "../parse-args.sh"
+fi
+
+if [[ "${START_OFFLINE_ONLINE_MONKEY}" != "yes" ]] ; then
+    echo skipping
+    exit 0
+fi
+
+if [[ "${OFFLINE_ONLINE_MONKEY_COUNT}" == "0" ]] ; then
+    echo skipping
+    exit 0
+fi
+
+echo starting offline-online monkeys
+
+DIR=`dirname ${0}`
+DIR=`realpath ${DIR}`
+
+for i in $(eval echo "{1..${OFFLINE_ONLINE_MONKEY_COUNT}}") ; do
+    pushd ../00-builder/
+    ./exec -d lww-set-offline-online-monkey-${i} "${DIR}" "/in" "/in/offline_online_monkey.clj ${NODES_COUNT} ${OFFLINE_ONLINE_MONKEY_IN_PROCESS_COUNT}"
+    popd
+done
+
+echo all monkeys are up

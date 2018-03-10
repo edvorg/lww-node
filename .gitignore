@@ -10,3 +10,8 @@ pom.xml.asc
 /.nrepl-port
 /TAGS
 /data/
+/docker/local
+/docker/03-redis/data/
+/docker/lein
+/docker/40-lww-node/.lein-env
+/docker/40-lww-node/.release/

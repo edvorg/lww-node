@@ -1,0 +1,24 @@
+#! /bin/bash
+
+set -e
+
+if [ -f "../parse-args.sh" ] ; then
+    source "../parse-args.sh"
+fi
+
+echo running lww-set-redis
+
+DATA=`realpath ./data`
+
+if [ "${DROP_DATA}" == "yes" ] ; then
+    rm -rf ${DATA}
+fi
+
+mkdir -p "${DATA}"
+
+docker run -d --network lww-set --hostname lww-set-redis --name lww-set-redis \
+       -v "${DATA}:/data" \
+       redis:3.2 \
+       redis-server --appendonly yes
+
+echo redis is ready

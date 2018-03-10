@@ -1,0 +1,30 @@
+#! /bin/bash
+
+set -e
+
+MODE=${1}
+CONTAINER_NAME=${2}
+MOUNT_DIR=`realpath ${3}`
+WORK_DIR=${4}
+COMMAND=${5}
+
+echo "running builder ${CONTAINER_NAME} mounting '${MOUNT_DIR}' exec '${COMMAND}' in '${WORK_DIR}'"
+
+mkdir -p ~/.m2
+mkdir -p ~/.lein
+mkdir -p ~/.gradle
+
+GROUP_ID=`id -g`
+USER_ID=`id -u`
+GROUP_NAME=`id -g -n`
+USER_NAME=`id -u -n`
+
+docker run ${MODE} -t --network lww-set --hostname ${CONTAINER_NAME} --name ${CONTAINER_NAME} \
+       -v ~/.m2:/home/${USER}/.m2 \
+       -v ~/.lein:/home/${USER}/.lein \
+       -v ~/.gradle:/home/${USER}/.gradle \
+       -v ${MOUNT_DIR}:/in \
+       -v /var/run/docker.sock:/var/run/docker.sock \
+       lww-set-builder sh -c "chmod o+w /var/run/docker.sock && groupadd -f -g ${GROUP_ID} ${GROUP_NAME} && useradd --shell /bin/bash -u ${USER_ID} -g ${GROUP_ID} -o -c \"\" ${USER_NAME} && cd ${WORK_DIR} && exec gosu ${USER_NAME} sh -c \"${COMMAND}\""
+
+echo builder is ready

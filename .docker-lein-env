@@ -1,0 +1,6 @@
+{:mode                     :uberjar
+ :offload-interval-seconds 60
+ :redis-spec               {:host "lww-set-redis"
+                            :port 6379}
+ :io-threads               2
+ :worker-threads           8}

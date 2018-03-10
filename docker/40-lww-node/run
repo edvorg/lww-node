@@ -1,0 +1,39 @@
+#! /bin/bash
+
+set -e
+
+if [ -f "../parse-args.sh" ] ; then
+    source "../parse-args.sh"
+fi
+
+if [[ "${START_NODES}" != "yes" ]] ; then
+    echo skipping
+    exit 0
+fi
+
+echo running lww-set-node
+
+for i in $(eval echo "{1..${NODES_COUNT}}") ; do
+    let PORT=3000+${i}
+    NODES="${NODES} lww-set-node-${i}:$PORT"
+done
+
+for i in $(eval echo "{1..${NODES_COUNT}}") ; do
+    let PORT=3000+${i}
+    CURRENT_NODES="lww-set-node-${i}:$PORT ${NODES}"
+
+    echo running node on port ${PORT} with nodes ${CURRENT_NODES}
+
+    docker run -d --network lww-set --hostname lww-set-node-${i} --name lww-set-node-${i} \
+           -p ${PORT}:${PORT} \
+           -w /lww-set \
+           lww-set-node \
+           java -jar lww-node.jar ${PORT} ${CURRENT_NODES}
+
+    while ! nc -z localhost ${PORT} ; do
+        echo waiting for lww-set-node-${i} to open port ${PORT}
+        sleep 5s
+    done
+
+    echo lww-set-node-${i} is ready
+done

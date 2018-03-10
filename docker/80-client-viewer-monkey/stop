@@ -1,0 +1,15 @@
+#! /bin/bash
+
+if [ -f "../parse-args.sh" ] ; then
+    source "../parse-args.sh"
+fi
+
+if [[ "${CLIENT_VIEWER_MONKEY_COUNT}" == "0" ]] ; then
+    echo skipping
+    exit 0
+fi
+
+for i in $(eval echo "{1..${CLIENT_VIEWER_MONKEY_COUNT}}") ; do
+    echo stopping
+    docker rm -f lww-set-client-viewer-monkey-${i}
+done

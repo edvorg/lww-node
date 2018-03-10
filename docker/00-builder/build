@@ -1,0 +1,11 @@
+#! /bin/bash
+
+set -e
+
+if [ -f "../parse-args.sh" ] ; then
+    source "../parse-args.sh"
+fi
+
+echo building lww-set-builder
+
+docker build $NOCACHE -t lww-set-builder .

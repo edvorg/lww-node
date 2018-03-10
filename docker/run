@@ -1,0 +1,49 @@
+#! /bin/bash
+
+set -e
+
+echo "================================================================================================"
+echo "== RUNNING =================================================================================="
+
+ARGS=$@
+
+if [ -z "${BASH_SOURCE[0]}" ] ; then
+    LOCAL_DIR=`dirname $0`
+else
+    LOCAL_DIR=`dirname ${BASH_SOURCE[0]}`
+fi
+
+LOCAL_DIR=`realpath ${LOCAL_DIR}`
+
+pushd ${LOCAL_DIR}
+
+if [ -f "./parse-args.sh" ] ; then
+    source "./parse-args.sh"
+fi
+
+if [ -f "./setup.sh" ] ; then
+    source "./setup.sh"
+fi
+
+DIRS=`ls`
+
+for entry in ${DIRS} ; do
+    if [ -d ${entry} ] ; then
+        echo "------------------------------------------------------------------------------------------------"
+        echo entering ${entry}
+        pushd ${entry}
+        if [ ! -f ./run ] ; then
+            echo nothing to run
+        else
+            ./run ${ARGS}
+            CODE=$?
+            if [ "${CODE}" != "0" ] ; then
+                echo failed. exiting with ${CODE}
+                exit ${CODE}
+            fi
+        fi
+        popd
+    fi
+done
+
+popd
