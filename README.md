@@ -325,6 +325,7 @@ Encoded replica:
 - add ssl certificates
 - add option to use external redis service (useful for --prod mode)
 - use different naming convetions for container based on mode (prod, staging, test)
+- make sure offloading to redis doesn't happen at the same time on nodes by tweaking scheduler
 
 ## License
 
