@@ -25,7 +25,6 @@ NODES=""
 
 if [ "${NODES_COUNT}" != "0" ] ; then
     for i in $(eval echo "{1..${NODES_COUNT}}") ; do
-        echo ${i}
         let PORT=3000+${i}
         NODES="${NODES} lww-set-node-${i}:$PORT"
     done
