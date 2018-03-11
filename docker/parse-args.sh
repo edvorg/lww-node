@@ -117,6 +117,7 @@ do
 
         -i|--integration)
             DROP_DATA="yes"
+            DATA_DIR="data-integration"
             START_NODES="yes"
             NODES_COUNT=3
             START_NORMAL_MONKEY="no"
@@ -133,6 +134,10 @@ do
             ;;
     esac
 done
+
+if [ -z "${DATA_DIR}" ] ; then
+    DATA_DIR="data-integration"
+fi
 
 if ! [[ "${NODES_COUNT}" =~ ^[0-9]+$ ]] ; then
     echo NODES_COUNT must be an integer but has value: "'${NODES_COUNT}'" setting to 1

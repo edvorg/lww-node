@@ -15,3 +15,4 @@ pom.xml.asc
 /docker/lein
 /docker/40-lww-node/.lein-env
 /docker/40-lww-node/.release/
+/docker/03-redis/data-integration/

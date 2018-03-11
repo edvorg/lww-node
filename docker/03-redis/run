@@ -8,7 +8,7 @@ fi
 
 echo running lww-set-redis
 
-DATA=`realpath ./data`
+DATA=`realpath ./${DATA_DIR}`
 
 if [ "${DROP_DATA}" == "yes" ] ; then
     rm -rf ${DATA}
