@@ -71,6 +71,11 @@ do
             shift # past argument
             ;;
 
+        -en|--external-nodes)
+            EXTERNAL_NODES=${2}
+            shift # past argument
+            ;;
+
         -nmc|--normal-monkey-count)
             NORMAL_MONKEY_COUNT=${2}
             shift # past argument
@@ -177,6 +182,7 @@ if [[ "${VERBOSE}" == "yes" ]] ; then
     echo START_CLIENT_VIEWER_MONKEY = ${START_CLIENT_VIEWER_MONKEY}
     echo
     echo NODES_COUNT = ${NODES_COUNT}
+    echo EXTERNAL_NODES = ${EXTERNAL_NODES}
     echo NORMAL_MONKEY_COUNT = ${NORMAL_MONKEY_COUNT}
     echo NORMAL_MONKEY_IN_PROCESS_COUNT = ${NORMAL_MONKEY_IN_PROCESS_COUNT}
     echo OFFLINE_ONLINE_MONKEY_COUNT = ${OFFLINE_ONLINE_MONKEY_COUNT}

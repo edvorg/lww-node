@@ -13,6 +13,8 @@ export START_NODES=yes
 
 export NODES_COUNT=3
 
+export EXTERNAL_NODES=
+
 export START_NORMAL_MONKEY=yes
 
 export NORMAL_MONKEY_COUNT=3

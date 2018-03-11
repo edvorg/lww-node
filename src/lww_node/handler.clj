@@ -70,7 +70,8 @@
   (timbre/debug "accepting replication diff" replica-diff)
   (swap! (:data @redis/offloader)
          update :replica
-         lww-element-set/merge-replicas replica-diff))
+         lww-element-set/merge-replicas replica-diff)
+  (response/response "ok"))
 
 (defn members-handler
   "Return all members in current replica."

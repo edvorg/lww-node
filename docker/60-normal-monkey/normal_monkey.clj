@@ -13,14 +13,13 @@
 (require '[cheshire.core :as cheshire])
 (require '[taoensso.timbre :as timbre])
 
-(defn worker [nodes-count normal-monkey-in-process-count]
+(defn worker [nodes normal-monkey-in-process-count]
   (loop []
     (let [sleep-ms       (rand-int 10000)
           add?           (pos? (rand-int 2))
           elements-count (inc (rand-int 10))
           elements       (repeatedly elements-count #(rand-int 100))
-          node-id        (rand-int nodes-count)
-          node           (str "lww-set-node-" (inc node-id) ":" (+ 3001 node-id))
+          node           (rand-nth nodes)
           [op url]       (if add?
                            ["adding" (str "http://" node "/insert")]
                            ["removing" (str "http://" node "/delete")])]
@@ -34,13 +33,13 @@
     (recur)))
 
 (let [[_
-       nodes-count
-       normal-monkey-in-process-count] (vec clojure.core/*command-line-args*)
-      nodes-count                      (Integer/parseInt nodes-count)
-      normal-monkey-in-process-count   (Integer/parseInt normal-monkey-in-process-count)
-      _                                (timbre/info "running" normal-monkey-in-process-count "threads")
-      threads                          (for [_ (range normal-monkey-in-process-count)]
-                                         (doto (Thread. #(worker nodes-count normal-monkey-in-process-count))
-                                           (.start)))]
+       normal-monkey-in-process-count
+       & nodes]                      (vec clojure.core/*command-line-args*)
+      normal-monkey-in-process-count (Integer/parseInt normal-monkey-in-process-count)
+      _                              (timbre/info "running with nodes" (vec nodes))
+      _                              (timbre/info "running" normal-monkey-in-process-count "threads")
+      threads                        (for [_ (range normal-monkey-in-process-count)]
+                                       (doto (Thread. #(worker nodes normal-monkey-in-process-count))
+                                         (.start)))]
   (doseq [t threads]
     (.join t)))

@@ -21,9 +21,20 @@ echo starting client-viewer monkeys
 DIR=`dirname ${0}`
 DIR=`realpath ${DIR}`
 
+NODES=""
+
+if [ "${NODES_COUNT}" != "0" ] ; then
+    for i in $(eval echo "{1..${NODES_COUNT}}") ; do
+        echo ${i}
+        let PORT=3000+${i}
+        NODES="${NODES} lww-set-node-${i}:$PORT"
+    done
+fi
+
 for i in $(eval echo "{1..${CLIENT_VIEWER_MONKEY_COUNT}}") ; do
     pushd ../00-builder/
-    ./exec -d lww-set-client-viewer-monkey-${i} "${DIR}" "/in" "/in/client_viewer_monkey.clj ${NODES_COUNT} ${CLIENT_VIEWER_MONKEY_IN_PROCESS_COUNT}"
+    echo running with nodes ${NODES} ${EXTERNAL_NODES}
+    ./exec -d lww-set-client-viewer-monkey-${i} "${DIR}" "/in" "/in/client_viewer_monkey.clj ${CLIENT_VIEWER_MONKEY_IN_PROCESS_COUNT} ${NODES} ${EXTERNAL_NODES}"
     popd
 done
 

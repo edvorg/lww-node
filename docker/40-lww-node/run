@@ -22,13 +22,13 @@ for i in $(eval echo "{1..${NODES_COUNT}}") ; do
     let PORT=3000+${i}
     CURRENT_NODES="lww-set-node-${i}:$PORT ${NODES}"
 
-    echo running node on port ${PORT} with nodes ${CURRENT_NODES}
+    echo running node on port ${PORT} with nodes ${CURRENT_NODES} ${EXTERNAL_NODES}
 
     docker run -d --network lww-set --hostname lww-set-node-${i} --name lww-set-node-${i} \
            -p ${PORT}:${PORT} \
            -w /lww-set \
            lww-set-node \
-           java -jar lww-node.jar ${PORT} ${CURRENT_NODES}
+           java -jar lww-node.jar ${PORT} ${CURRENT_NODES} ${EXTERNAL_NODES}
 
     while ! nc -z localhost ${PORT} ; do
         echo waiting for lww-set-node-${i} to open port ${PORT}

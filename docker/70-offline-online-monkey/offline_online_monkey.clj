@@ -15,9 +15,8 @@
 (require '[taoensso.timbre :as timbre])
 (require '[lww-element-set.core :as lww-element-set])
 
-(defn get-random-node [nodes-count]
-  (let [node-id (rand-int nodes-count)]
-    (str "lww-set-node-" (inc node-id) ":" (+ 3001 node-id))))
+(defn get-random-node [nodes]
+  (rand-nth nodes))
 
 (defn get-replica-diff [node since]
   (try
@@ -28,8 +27,8 @@
       (timbre/error e "unable to receive replica diff from node" node)
       (lww-element-set/make-replica))))
 
-(defn worker [i nodes-count normal-monkey-in-process-count]
-  (let [node (get-random-node nodes-count)]
+(defn worker [i nodes normal-monkey-in-process-count]
+  (let [node (get-random-node nodes)]
     (loop [local-replica (let [replica (get-replica-diff node 0)
                                _       (timbre/info "received elements" (lww-element-set/members replica)
                                                     "from" node)]
@@ -79,13 +78,13 @@
             (recur replica last-download last-upload)))))))
 
 (let [[_
-       nodes-count
-       normal-monkey-in-process-count] (vec clojure.core/*command-line-args*)
-      nodes-count                      (Integer/parseInt nodes-count)
-      normal-monkey-in-process-count   (Integer/parseInt normal-monkey-in-process-count)
-      _                                (timbre/info "running" normal-monkey-in-process-count "threads")
-      threads                          (for [i (range normal-monkey-in-process-count)]
-                                         (doto (Thread. #(worker i nodes-count normal-monkey-in-process-count))
-                                           (.start)))]
+       normal-monkey-in-process-count
+       & nodes]                      (vec clojure.core/*command-line-args*)
+      normal-monkey-in-process-count (Integer/parseInt normal-monkey-in-process-count)
+      _                              (timbre/info "running with nodes" (vec nodes))
+      _                              (timbre/info "running" normal-monkey-in-process-count "threads")
+      threads                        (for [i (range normal-monkey-in-process-count)]
+                                       (doto (Thread. #(worker i nodes normal-monkey-in-process-count))
+                                         (.start)))]
   (doseq [t threads]
     (.join t)))

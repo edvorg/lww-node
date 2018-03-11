@@ -13,11 +13,11 @@ with data offloading to redis db using scheduler. In default configuration offlo
 or on node shutdown. In current implementaion replication happens immediately upon insert/delete request from client
 and is a subject to further improvement.
 
-Implementaion is based on [lww-element-set](https://github.com/edvorg/lww-element-set) library developed by same author.
+Implementaion is based on [lww-element-set](https://github.com/edvorg/lww-element-set) library developed by the same author.
 
 ## Demo
 
-Deom instance is available at http://rust.cafe:3001.
+Demo instance is available at http://rust.cafe:3001.
 
 ## Scaling
 
@@ -126,16 +126,43 @@ To see logs from chaos monkey execute
 >> docker logs -f lww-set-client-viewer-monkey-1 # or any other container id
 ```
 
+### Run monkeys on external nodes
+
+To run monkeys locally but connect them to remote cluster you may do following:
+
+```shell
+cd ./docker
+./start-env.sh --external-nodes rust.cafe:3001 --nodes-count 0
+...
+./stop-env.sh --external-nodes rust.cafe:3001 --nodes-count 0
+```
+
+External nodes adds additional set of hosts to list of nodes that monkeys connect to.
+
+You may as well start your local nodes and these nodes will replicate to external nodes:
+
+```shell
+cd ./docker
+./start-env.sh --external-nodes rust.cafe:3001 --nodes-count 1
+...
+./stop-env.sh --external-nodes rust.cafe:3001 --nodes-count 1
+```
+
+Currently external nodes would have no knowledge of your local node.
+This can be improved with dynamic discovery technique.
+Also your local instance would have local redis instance for persistence.
+This can easily be improved by adding option to connect to external redis service.
+
 ### Other deployment options
 
 `./start-env.sh` script is a flexible and allows various models of execution.
-Following arguments are supported
+Following arguments are supported:
 
 - `-n|--no-cache`
-  Disables caching when building docker containers
+  Disables caching when building docker containers.
 
 - `-v|--verbose`
-  Prints debug information during docker env build process
+  Prints debug information during docker env build process.
 
 - `-ub|--use-builder (yes|no)`
   By default all clojure code is build inside docker container.
@@ -144,46 +171,49 @@ Following arguments are supported
   should be present on your system.
 
 - `-s|--start (yes|no)`
-  Start all subsystems (redis, lww nodes, all types of monkeys)
+  Start all subsystems (redis, lww nodes, all types of monkeys).
 
 - `-sn|--start-nodes (yes|no)`
-  Start nodes
+  Start nodes.
 
 - `-snm|--start-normal-monkey (yes|no)`
-  Start normal monkey bot
+  Start normal monkey bot.
 
 - `-soom|--start-offline-online-monkey (yes|no)`
-  Start offline-online monkey bot
+  Start offline-online monkey bot.
 
 - `-scvm|--start-client-viewer-monkey (yes|no)`
-  Start client-viewer monkey bot
+  Start client-viewer monkey bot.
 
 - `-nc|--nodes-count (number)`
-  Number of lww nodes to star
+  Number of lww nodes to star.
 
 - `-nmc|--normal-monkey-count (number)`
-  Number of normal monkey processes to start
+  Number of normal monkey processes to start.
 
 - `-nmipc|--normal-monkey-in-process-count (number)`
-  Number of normal workers per process to start
+  Number of normal workers per process to start.
 
 - `-oomc|--offline-online-monkey-count (number)`
-  Number of offline-online monkey processes to start
+  Number of offline-online monkey processes to start.
 
 - `-oomipc|--offline-online-monkey-in-process-count (number)`
-  Number of offline-online workers per process to start
+  Number of offline-online workers per process to start.
 
 - `-cvmc|--client-viewer-monkey-count (number)`
-  Number of client-viewer monkey processes to start
+  Number of client-viewer monkey processes to start.
 
 - `-cvmipc|--client-viewer-monkey-in-process-count (number)`
-  Number of client-viewer workers per process to start
+  Number of client-viewer workers per process to start.
 
 - `-p|--prod`
-  Start 1 node, 1 redis, no monkeys
+  Start 1 node, 1 redis, no monkeys.
 
 - `-i|--integration`
-  Start 3 nodes, 1 redis, no monkeys
+  Start 3 nodes, 1 redis, no monkeys.
+
+- `-en|--external-nodes (nodes list)`
+  Connect to external nodes.
 
 If you prefer to store these options on disc you may execute
 ```shell
@@ -289,6 +319,10 @@ Encoded replica:
 ## List of improvements
 
 - use more relaxed replication technique in order to unload cluster
+- improve errors handling for incorrect request data
+- add authentication
+- add better in-cluster discovery algorithm (currently every node has to be run with static list of all other nodes)
+- add ssl certificates
 - add option to use external redis service (useful for --prod mode)
 - use different naming convetions for container based on mode (prod, staging, test)
 

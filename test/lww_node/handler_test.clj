@@ -110,4 +110,6 @@
                                              :content-type :transit+json})
   (http/post "http://localhost:3001/delete" {:form-params  [200 199]
                                              :content-type :transit+json})
+  (http/get "http://localhost:3001/updates" {:query-params {:since 0}
+                                             :as           :transit+json})
   )
