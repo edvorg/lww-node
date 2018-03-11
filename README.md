@@ -27,6 +27,10 @@ Replication algorithm can be further relaxed and optimized:
 - by batching replication messages
 - by using low-level networking protocols that have less overhead then http
 
+It's possible to achieve as many as 1 million concurrent chaos monkeys as long
+as set is sufficiently distributed and balanced across several nodes.
+Performance of single node is a subject to further analysis.
+
 ## Prerequisites
 
 Make sure that you have JVM and docker installed.
@@ -237,6 +241,10 @@ cd lww-node/docker
 This implementation uses `application/transit+json` as data interchange format.
 All requests and responses are encoded using transit json.
 
+Transit libraries for non-clojure clients:
+- java: https://github.com/cognitect/transit-java
+- javascript: https://github.com/cognitect/transit-js
+
 Every node exposes following endpoints:
 
 ### `POST /insert`
@@ -324,8 +332,10 @@ Encoded replica:
 - add better in-cluster discovery algorithm (currently every node has to be run with static list of all other nodes)
 - add ssl certificates
 - add option to use external redis service (useful for --prod mode)
-- use different naming convetions for container based on mode (prod, staging, test)
+- use different naming conventions for containers based on mode (prod, staging, test) to allow running several non-verlapping environments at the same time
 - make sure offloading to redis doesn't happen at the same time on nodes by tweaking scheduler
+- add `application/json` content type support to endpoints
+- tweak jvm memory options for production environment
 
 ## License
 
