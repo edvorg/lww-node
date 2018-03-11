@@ -10,6 +10,7 @@
             [ring.util.response :as response]
             [taoensso.timbre :as timbre]))
 
+;; last time data was replicated to cluster
 (mount/defstate last-replication-time
   :start (-> @redis/offloader
              :data
@@ -18,7 +19,9 @@
              lww-element-set/get-last-update
              atom))
 
-(defn get-replication-nodes []
+(defn get-replication-nodes
+  "Returns all cluster nodes except current one."
+  []
   (let [[this-node & other-nodes] (:nodes (mount/args))]
     (disj (set other-nodes) this-node)))
 

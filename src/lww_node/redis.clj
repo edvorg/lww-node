@@ -55,6 +55,7 @@
     {:replica     replica
      :last-update last-update}))
 
+;; data persist job that runs periodically and offloads a diff of data to redis
 (mount/defstate offloader
   :start (let [replica (wcar* (car/get :data))
                data    (atom {:last-update (lww-element-set/get-last-update replica)

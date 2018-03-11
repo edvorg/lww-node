@@ -6,6 +6,7 @@
             [mount.core :as mount]
             [taoensso.timbre :as timbre]))
 
+;; immutant web server
 (mount/defstate ^{:on-reload :noop} server
   :start (let [{port  :port
                 nodes :nodes
