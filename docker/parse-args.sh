@@ -136,7 +136,7 @@ do
 done
 
 if [ -z "${DATA_DIR}" ] ; then
-    DATA_DIR="data-integration"
+    DATA_DIR="data"
 fi
 
 if ! [[ "${NODES_COUNT}" =~ ^[0-9]+$ ]] ; then
