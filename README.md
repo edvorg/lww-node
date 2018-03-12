@@ -286,7 +286,7 @@ decoded transit:
 ### `GET /updates`
 
 Returns operations that happened after specified time.
-Example returns all changes ever made to set.
+Example returns all changes ever made to set since beginning of unix epoch.
 
 ```shell
 >> curl -X GET http://localhost:3001/updates?since=0
