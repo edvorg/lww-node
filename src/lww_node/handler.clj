@@ -34,6 +34,7 @@
       (if-not (compare-and-set! last-replication-time old-val (max last-diff-update old-val))
         (recur @last-replication-time)
         (let [replica-diff (->> replica-diff
+                                ;; FIXME bug: possible data miss if two operations happen at the same time
                                 (lww-element-set/filter-replica (fn [[_ timestamp]]
                                                                   (< old-val timestamp))))
 
@@ -71,6 +72,10 @@
   "Apply diff replica on current replica."
   [{replica-diff :body}]
   (timbre/debug "accepting replication diff" replica-diff)
+  ;; FIXME bug: if has any operations before last offload these operation won't be offloaded
+  ;; possible solutions:
+  ;; - maintain separate replica diff and flush it completely on next offload (preferred)
+  ;; - set last-update timestamp in offloader to timestamp of the earlies operation
   (swap! (:data @redis/offloader)
          update :replica
          lww-element-set/merge-replicas replica-diff)
