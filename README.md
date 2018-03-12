@@ -336,6 +336,11 @@ Encoded replica:
 - make sure offloading to redis doesn't happen at the same time on nodes by tweaking scheduler
 - add `application/json` content type support to endpoints
 - tweak jvm memory options for production environment
+- `POST /update` endpoint is a dangerous method that should be used for replication only and probably should not
+  be exposed to client. Find a better alternative for offline to online synchronization. Maybe the same version but
+  with limited range of operation timestamps would work good enough. It would prevent from attacks like deleting
+  an element with timestamp 0 which would prevent from ever inserting element in set or opposite inserting an
+  element with timestamp LONG_MAX which would prevent from ever deleting element from set.
 
 ## License
 
