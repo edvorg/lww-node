@@ -20,8 +20,8 @@
 
 (defn get-replica-diff [node since]
   (try
-    (-> (http/get (str "http://" node "/updates") {:query-params {:since since}
-                                                   :as           :transit+json})
+    (-> (http/get (str node "/updates") {:query-params {:since since}
+                                         :as :transit+json})
         :body)
     (catch Throwable e
       (timbre/error e "unable to receive replica diff from node" node)

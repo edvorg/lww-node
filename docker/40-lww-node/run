@@ -15,12 +15,12 @@ echo running lww-set-node
 
 for i in $(eval echo "{1..${NODES_COUNT}}") ; do
     let PORT=3000+${i}
-    NODES="${NODES} lww-set-node-${i}:$PORT"
+    NODES="${NODES} http://lww-set-node-${i}:$PORT"
 done
 
 for i in $(eval echo "{1..${NODES_COUNT}}") ; do
     let PORT=3000+${i}
-    CURRENT_NODES="lww-set-node-${i}:$PORT ${NODES}"
+    CURRENT_NODES="http://lww-set-node-${i}:$PORT ${NODES}"
 
     echo running node on port ${PORT} with nodes ${CURRENT_NODES} ${EXTERNAL_NODES}
 

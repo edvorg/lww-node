@@ -21,8 +21,8 @@
           elements       (repeatedly elements-count #(rand-int 100))
           node           (rand-nth nodes)
           [op url]       (if add?
-                           ["adding" (str "http://" node "/insert")]
-                           ["removing" (str "http://" node "/delete")])]
+                           ["adding" (str node "/insert")]
+                           ["removing" (str node "/delete")])]
       (timbre/info op "elements" (vec elements) "in node" node)
       (try
         (http/post url {:form-params  elements

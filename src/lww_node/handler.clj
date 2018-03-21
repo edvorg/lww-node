@@ -42,7 +42,7 @@
           (timbre/info "replicating diff to nodes" nodes)
           (doseq [node nodes]
             (try
-              (http/post (str "http://" node "/update")
+              (http/post (str node "/update")
                          {:form-params  replica-diff
                           :content-type :transit+json})
               (catch Throwable e

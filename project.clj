@@ -29,7 +29,7 @@
                                                                   :port 6379}
                                        :io-threads               2
                                        :worker-threads           8
-                                       :nodes                    ["localhost:12309"]}}
+                                       :nodes                    ["http://localhost:12309"]}}
              :uberjar  {:env {:mode                     :uberjar
                               :host                     "localhost"
                               :port                     12309
@@ -38,7 +38,7 @@
                                                          :port 6379}
                               :io-threads               2
                               :worker-threads           8
-                              :nodes                    ["localhost:12309"]}
+                              :nodes                    ["http://localhost:12309"]}
                         :aot :all}
              :jvm-opts ["-Xms256M"
                         "-Xmx1024M"]})

@@ -20,8 +20,8 @@
 
 (defn get-replica-diff [node since]
   (try
-    (-> (http/get (str "http://" node "/updates") {:query-params {:since since}
-                                                   :as           :transit+json})
+    (-> (http/get (str node "/updates") {:query-params {:since since}
+                                         :as :transit+json})
         :body)
     (catch Throwable e
       (timbre/error e "unable to receive replica diff from node" node)
@@ -47,7 +47,7 @@
                                ["removing" (lww-element-set/del-elements local-replica elements)])
               sync?          (= 0 (rand-int 10))
               _              (timbre/info "worker" i ":" op "elements" (vec elements) "in local replica")
-              url            (str "http://" node "/updates")]
+              url            (str node "/updates")]
           (Thread/sleep sleep-ms)
           (if sync?
             (do
@@ -61,7 +61,7 @@
                                                                   local-replica)
                     last-upload   (try
                                     (timbre/info "uploading elements" (lww-element-set/members local-diff))
-                                    (http/post (str "http://" node "/update")
+                                    (http/post (str node "/update")
                                                {:form-params  local-diff
                                                 :content-type :transit+json})
                                     (max last-upload (lww-element-set/get-last-update local-diff))

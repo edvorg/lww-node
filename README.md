@@ -136,9 +136,9 @@ To run monkeys locally but connect them to remote cluster you may do following:
 
 ```shell
 cd ./docker
-./start-env.sh --external-nodes rust.cafe:3001 --nodes-count 0
+./start-env.sh --external-nodes http://rust.cafe:3001 --nodes-count 0
 ...
-./stop-env.sh --external-nodes rust.cafe:3001 --nodes-count 0
+./stop-env.sh --external-nodes http://rust.cafe:3001 --nodes-count 0
 ```
 
 External nodes adds additional set of hosts to list of nodes that monkeys connect to.
@@ -147,9 +147,9 @@ You may as well start your local nodes and these nodes will replicate to externa
 
 ```shell
 cd ./docker
-./start-env.sh --external-nodes rust.cafe:3001 --nodes-count 1
+./start-env.sh --external-nodes http://rust.cafe:3001 --nodes-count 1
 ...
-./stop-env.sh --external-nodes rust.cafe:3001 --nodes-count 1
+./stop-env.sh --external-nodes http://rust.cafe:3001 --nodes-count 1
 ```
 
 Currently external nodes would have no knowledge of your local node.
