@@ -17,7 +17,7 @@ Implementaion is based on [lww-element-set](https://github.com/edvorg/lww-elemen
 
 ## Demo
 
-Demo instance is available at http://rust.cafe:3001.
+Demo instance is available at http://lww-node.clj.rocks.
 
 ## Scaling
 
